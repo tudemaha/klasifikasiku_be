@@ -1,6 +1,7 @@
 from fastapi import FastAPI, UploadFile
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware
 import uuid
 from classification import Classification
 from response import Response
@@ -10,12 +11,21 @@ from os import getenv
 load_dotenv()
 app = FastAPI()
 
+origins = getenv("ALLOWED_ORIGINS").split(',')
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 app.mount("/public", StaticFiles(directory="public"), name="public")
 app.mount("/classification", StaticFiles(directory="classification"), name="classification")
 
 @app.get("/")
 def read_root():
-    return {"Hello": "World"}
+    return {"message": "Hello World!"}
 
 @app.post('/classification')
 async def classify(transaction: UploadFile):
