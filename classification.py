@@ -3,6 +3,7 @@ from io import BytesIO
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import f1_score, recall_score, precision_score
 
 
 class Classification:
@@ -54,16 +55,22 @@ class Classification:
         x = dataset.iloc[:, 2:5].values
         y = dataset.iloc[:, -1].values
 
-        x_train, _, y_train, _ = train_test_split(x, y, test_size=0.20, random_state=0)
+        x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.20, random_state=0)
 
         sc = StandardScaler()
         x_train = sc.fit_transform(x_train)
-        x_pred = sc.transform(pred)
+        x_test = sc.fit_transform(x_test)
+        transactions_x = sc.transform(pred)
 
         best_k = 11
         knn = KNeighborsClassifier(n_neighbors=best_k)
         knn.fit(x_train, y_train)
 
-        y_pred = knn.predict(x_pred)
+        transactions_y = knn.predict(transactions_x)
 
-        return transactions, y_pred
+        y_pred = knn.predict(x_test)
+        f1 = f1_score(y_test, y_pred, pos_label='Laku')
+        recall = recall_score(y_test, y_pred, pos_label='Laku')
+        precision = precision_score(y_test, y_pred, pos_label='Laku')
+
+        return transactions, transactions_y, f1, recall, precision

@@ -36,16 +36,19 @@ async def classify(transaction: UploadFile):
     content = await transaction.read()
     try:
         classification = Classification(content)
-        transactions, pred = classification.knn_classification()
+        transactions, pred, f1, recall, precision = classification.knn_classification()
         transactions['prediction'] = pred
 
         id = str(uuid.uuid4())
-        transactions.to_excel('classification/{}.xlsx'.format(id), index=False)
+        transactions.to_excel('classification/{}.xlsx'.format(id), index=False, sheet_name='knn_classification')
 
         result = transactions.iloc[:, [0, 1, 5]].to_dict(orient='records')
 
         res = Response.success(data={
             'id': id,
+            'f1': f1,
+            'recall': recall,
+            'precision': precision,
             'excel_download': '{}/classification/{}.xlsx'.format(getenv("HOST"), id),
             'result': result
         })
