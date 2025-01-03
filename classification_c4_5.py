@@ -3,7 +3,7 @@ from io import BytesIO
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.metrics import f1_score, recall_score, precision_score
+from sklearn.metrics import f1_score, recall_score, precision_score, confusion_matrix
 
 
 class ClassificationC45:
@@ -58,8 +58,8 @@ class ClassificationC45:
         y = dataset.iloc[:, -1].values
 
         # Split the dataset into training, validation, and testing sets
-        x_train, x_temp, y_train, y_temp = train_test_split(x, y, test_size=0.30, random_state=0)
-        x_val, x_test, y_val, y_test = train_test_split(x_temp, y_temp, test_size=0.50, random_state=0)
+        x_train, x_temp, y_train, y_temp = train_test_split(x, y, test_size=0.20, random_state=0)
+        x_val, x_test, y_val, y_test = train_test_split(x_temp, y_temp, test_size=0.20, random_state=0)
 
         sc = StandardScaler()
         x_train = sc.fit_transform(x_train)
@@ -81,6 +81,14 @@ class ClassificationC45:
         f1 = f1_score(y_test, y_pred, pos_label='Laku')
         recall = recall_score(y_test, y_pred, pos_label='Laku')
         precision = precision_score(y_test, y_pred, pos_label='Laku')
+
+        cm = confusion_matrix(y_test, y_pred, labels=['Laku', 'Tidak Laku'])
+        print("Confusion Matrix:")
+        print(cm)
+
+        # Menghitung total data
+        total_data = cm.sum()  # Menjumlahkan semua elemen dalam matriks
+        print(f"Total data digunakan dalam Confusion Matrix: {total_data}")
 
         return transactions, transactions_y, f1, recall, precision
 
