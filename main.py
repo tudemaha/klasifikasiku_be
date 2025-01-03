@@ -85,6 +85,7 @@ async def classify(transaction: UploadFile):
         # Construct response
         res = {
             "status": 200,
+            "message": "success",
             "data": {
                 "id": id,
                 "f1": f1,
